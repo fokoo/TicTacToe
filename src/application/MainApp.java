@@ -147,7 +147,11 @@ public class MainApp  extends Application {
 				int id = stragieTicTacToe(player11, player22);
 				n = ids.indexOf(id);
 				//System.out.println("n of strategie: " + n);
-			} 						    
+			} 
+			if(player11.contains(Integer.valueOf(bt.get(n).getId())) 
+					|| player22.contains(Integer.valueOf(bt.get(n).getId()))) {
+				n = getCornerIndex(false);										 
+			}
 			while(player11.contains(Integer.valueOf(bt.get(n).getId())) 
 					|| player22.contains(Integer.valueOf(bt.get(n).getId()))) {			
 				n = rand.nextInt(9);						 
@@ -191,9 +195,28 @@ public class MainApp  extends Application {
 		return false;    
 	}
 
+	public int getCornerIndex(boolean isId) {
+		List<Integer> corners = new ArrayList<Integer>();
+		if(isId) {
+			corners.add(2);
+			corners.add(4);
+			corners.add(6);
+			corners.add(8);
+			return corners.get(rand.nextInt(4));
+		}
+		corners.add(ids.indexOf(2));
+		corners.add(ids.indexOf(4));
+		corners.add(ids.indexOf(6));
+		corners.add(ids.indexOf(8));
+		return corners.get(rand.nextInt(4));
+	}
+
 	public int stragieTicTacToe(ArrayList<Integer> player, ArrayList<Integer> computerPlayer) {
 		if(count==1) {
-			return  player.contains(5)?rand.nextInt(9)+1:5;
+			if(level==1) {
+				return  player.contains(5)?rand.nextInt(9)+1:5;
+			}
+			return  player.contains(5)?getCornerIndex(true):5;
 		}
 		if(count < 4) {
 			int n = strategie(player, computerPlayer);
@@ -297,19 +320,19 @@ public class MainApp  extends Application {
 	}
 
 	public void endGame(Color color) {
-		round++;
+		round=(round+1)%11;
 		String c1 = colorsNames.get(colors.indexOf(playersColors[0]));
 		String c2 = colorsNames.get(colors.indexOf(playersColors[1]));
 		if(color==playersColors[0] ) {
 			++wins1;
-			label.setText("GAME OVER!!! THE WINNER IS "+ c1 + "."
+			label.setText("GAME OVER!!! "+ c1 + " WINS. "
 					+ " Score: " +c1 +" "+ wins1 + " : " + c2 +" "+ wins2);			   
 		}else if(color==playersColors[1]){
 			++wins2;
-			label.setText("GAME OVER!!! THE WINNER IS "+ c2 + "."
+			label.setText("GAME OVER!!! "+ c2 + " WINS. "
 					+ " Score: " +c1 +" "+ wins1 + " : " + c2 +" "+ wins2);
 		}else if(color==Color.GREY){
-			label.setText("GAME OVER!!! IT IS DRAW."
+			label.setText("GAME OVER!!! IT'S DRAW."
 					+ " Score: " +c1 +" "+ wins1 + " : " + c2 +" "+ wins2);
 		}
 		initPlayer();
@@ -382,7 +405,7 @@ public class MainApp  extends Application {
 		hbox3.getChildren().addAll(bt7, bt8, bt9);
 
 		//gridpane.setAlignment(Pos.TOP_CENTER);
-		label = new Label("Current round: "+ round + ". You "
+		label = new Label("Round: "+ round + ". You "
 				+ "play with Computer: "+ playComputer );
 		//label.setAlignment(Pos.CENTER);
 		btRePlay = new Button("Re-Play");
@@ -403,13 +426,13 @@ public class MainApp  extends Application {
 			int ll =level+1;
 			btLevel.setText("Level "+ ll);
 		});
-		btPlayComputer = new Button("Play with Computer");
+		btPlayComputer = new Button("Single Player");
 		btPlayComputer.setPadding(new Insets(20));
 		btPlayComputer.setOnAction(e -> {
 			replay();
 			playComputer = true;
-			label.setText("Current round: "+ round + ". You "
-					+ "play with Computer: "+ playComputer);
+			label.setText("Round: "+ round+ ". " 
+					+ "Single Player: "+ playComputer);
 		});
 		hbox4 = new HBox(10);
 		hbox4.setAlignment(Pos.BOTTOM_CENTER);
